@@ -38,7 +38,13 @@ export default function ProjectDetailPage() {
   const [loading, setLoading] = useState(true)
   const [activeTab, setActiveTab] = useState<"director" | "designer" | "coder">("director")
   const [editing, setEditing] = useState(false)
-  const [editForm, setEditForm] = useState({ name: "", client_name: "", status: "", requirements: "" })
+  const [editForm, setEditForm] = useState({ 
+    name: "", 
+    client_name: "", 
+    status: "", 
+    requirements: "" ,
+    budget: "",
+  })
 
   useEffect(() => {
     const init = async () => {
@@ -56,6 +62,7 @@ export default function ProjectDetailPage() {
           client_name: projectData.client_name || "",
           status: projectData.status,
           requirements: projectData.requirements || "",
+          budget: projectData.budget ? String(projectData.budget),
         })
       }
 
@@ -67,11 +74,18 @@ export default function ProjectDetailPage() {
     init()
   }, [id])
 
-  const handleSave = async () => {
-    await supabase.from("projects").update(editForm).eq("id", id)
-    setProject((p) => p ? { ...p, ...editForm } : p)
-    setEditing(false)
-  }
+      const handleSave = async () => {
+      await supabase.from("projects").update({
+        ...editForm,
+        budget: editForm.budget ? Number(editForm.budget) : null,
+      }).eq("id", id)
+      setProject((p) => p ? {
+        ...p,
+        ...editForm,
+        budget: editForm.budget ? Number(editForm.budget) : null,
+      } : p)
+      setEditing(false)
+    }
 
   if (loading) return <p style={{ padding: 40 }}>読み込み中...</p>
   if (!project) return <p style={{ padding: 40 }}>案件が見つかりません</p>
@@ -231,7 +245,15 @@ export default function ProjectDetailPage() {
                 </select>
                 <textarea value={editForm.requirements} onChange={(e) => setEditForm({ ...editForm, requirements: e.target.value })}
                   placeholder="要件メモ" rows={3}
+                  
                   style={{ padding: "8px 10px", borderRadius: 6, border: "1px solid #e5e7eb", fontSize: 13, outline: "none", resize: "vertical", fontFamily: "inherit" }} />
+                  <input
+                      value={editForm.budget}
+                      onChange={(e) => setEditForm({ ...editForm, budget: e.target.value })}
+                      placeholder="金額"
+                      type="number"
+                      style={{ padding: "8px 10px", borderRadius: 6, border: "1px solid #e5e7eb", fontSize: 13, outline: "none" }}
+                    />
                 <button onClick={() => setEditing(false)}
                   style={{ fontSize: 12, color: "#9ca3af", background: "none", border: "none", cursor: "pointer" }}>
                   キャンセル
@@ -244,6 +266,7 @@ export default function ProjectDetailPage() {
                   { label: "案件名", value: project.name },
                   { label: "会社名", value: project.client_name },
                   { label: "ステータス", value: project.status },
+                  { label: "金額", value: project.budget },
                 ].map((item) => (
                   <div key={item.label}>
                     <p style={{ fontSize: 11, color: "#9ca3af", margin: "0 0 2px" }}>{item.label}</p>

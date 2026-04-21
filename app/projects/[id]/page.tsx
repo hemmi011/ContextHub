@@ -62,7 +62,7 @@ export default function ProjectDetailPage() {
           client_name: projectData.client_name || "",
           status: projectData.status,
           requirements: projectData.requirements || "",
-          budget: projectData.budget ? String(projectData.budget),
+          budget: projectData.budget ? String(projectData.budget): "",
         })
       }
 

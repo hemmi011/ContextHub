@@ -1,36 +1,65 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# ContextHub
 
-## Getting Started
+Web制作会社向けの案件管理・意思決定共有ツール
 
-First, run the development server:
+## 概要
+
+案件の進行状況だけでなく、「なぜその判断をしたか」という意思決定の背景までチーム全体で共有できるプロジェクト管理ツールです。
+
+ディレクター・コーダー・デザイナーが同じ情報を見ながら仕事を進め、引き継ぎや情報共有をスムーズにすることを目的としています。
+
+## 作った背景
+
+Web制作会社では以下の課題が多く存在します。
+
+- 案件情報が代表やPMなど一部の人しか閲覧できない
+- ディレクター・コーダー・デザイナー間で情報共有が不十分
+- 引き継ぎ時に必要な情報が不足する
+- 「なぜこの仕様・デザインになったのか」が残らない
+- 業務委託メンバーに全情報を見せたくない
+
+これらを解決するために開発しました。
+
+## 機能
+
+- ログイン認証
+- 案件管理（作成・編集・削除・完了）
+- タスク管理（担当者・期限・ステータス設定）
+- 思考ログ（意思決定の背景を記録・編集）
+- 役割別タブ表示（ディレクター・デザイナー・コーダー）
+- 権限管理（役割ごとに編集できる範囲を制限）
+- 組織ごとのデータ分離（セキュリティ）
+- 進捗サマリー（タスク完了率）
+- 検索・フィルター機能
+
+## 使用技術
+
+| 技術 | 用途 |
+|------|------|
+| Next.js 16 (App Router) | フロントエンド |
+| TypeScript | 型安全な開発 |
+| Supabase | データベース・認証・RLS |
+| Vercel | デプロイ・ホスティング |
+
+## デモ
+
+https://context-hub-git-main-hemmis-projects-36cc727b.vercel.app
+
+## セットアップ
+
+```bash
+git clone https://github.com/hemmi011/ContextHub.git
+cd context-hub
+npm install
+```
+
+`.env.local`を作成して以下を設定してください。
+
+```
+NEXT_PUBLIC_SUPABASE_URL=your_supabase_url
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
+```
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
-
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
-
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
-
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.

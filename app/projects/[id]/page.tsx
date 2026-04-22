@@ -250,7 +250,7 @@ export default function ProjectDetailPage() {
                   <input
                       value={editForm.budget}
                       onChange={(e) => setEditForm({ ...editForm, budget: e.target.value })}
-                      placeholder="金額"
+                      placeholder="金額（税別）"
                       type="number"
                       style={{ padding: "8px 10px", borderRadius: 6, border: "1px solid #e5e7eb", fontSize: 13, outline: "none" }}
                     />

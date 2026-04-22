@@ -4,14 +4,23 @@ import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
 import { supabase } from "@/lib/supabase"
 
+type Organization = {
+  id: string
+  name: string
+}
+
 export default function ProfileSetupPage() {
   const router = useRouter()
   const [name, setName] = useState("")
   const [role, setRole] = useState("director")
   const [organizationName, setOrganizationName] = useState("")
+  const [selectedOrgId, setSelectedOrgId] = useState("")
+  const [organizations, setOrganizations] = useState<Organization[]>([])
   const [loading, setLoading] = useState(false)
   const [userId, setUserId] = useState("")
   const [email, setEmail] = useState("")
+
+  const isManager = role === "director" || role === "pm"
 
   useEffect(() => {
     const getUser = async () => {
@@ -27,33 +36,50 @@ export default function ProfileSetupPage() {
     getUser()
   }, [])
 
+  useEffect(() => {
+    const fetchOrganizations = async () => {
+      const { data } = await supabase.from("organizations").select("id, name")
+      setOrganizations(data || [])
+    }
+    fetchOrganizations()
+  }, [])
+
   const handleSubmit = async () => {
-    if (!name || !organizationName) return
+    if (!name) return
+    if (isManager && !organizationName) return
+    if (!isManager && !selectedOrgId) return
+
     setLoading(true)
 
-    // 組織を作成
-    const { data: org } = await supabase
-      .from("organizations")
-      .insert([{ name: organizationName }])
-      .select()
-      .single()
+    let orgId = selectedOrgId
 
-    if (!org) {
-      setLoading(false)
-      return
+    if (isManager) {
+      const { data: org } = await supabase
+        .from("organizations")
+        .insert([{ name: organizationName }])
+        .select()
+        .single()
+
+      if (!org) {
+        setLoading(false)
+        return
+      }
+      orgId = org.id
     }
 
-    // usersテーブルに登録
     await supabase.from("users").upsert([{
       id: userId,
       name: name,
       email: email,
       role: role,
-      organization_id: org.id,
+      organization_id: orgId,
     }])
 
     router.push("/")
   }
+
+  const isDisabled = loading || !name ||
+    (isManager ? !organizationName : !selectedOrgId)
 
   return (
     <div style={{
@@ -108,29 +134,45 @@ export default function ProfileSetupPage() {
             </select>
           </label>
 
-          <label style={{ display: "flex", flexDirection: "column", gap: 6 }}>
-            <span style={{ fontSize: 12, fontWeight: 500, color: "#6b7280" }}>会社名</span>
-            <input
-              value={organizationName}
-              onChange={(e) => setOrganizationName(e.target.value)}
-              placeholder="例：株式会社〇〇"
-              style={{ padding: "10px 12px", borderRadius: 8, border: "1px solid #e5e7eb", fontSize: 14, outline: "none" }}
-            />
-          </label>
+          {isManager ? (
+            <label style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+              <span style={{ fontSize: 12, fontWeight: 500, color: "#6b7280" }}>会社名（新規作成）</span>
+              <input
+                value={organizationName}
+                onChange={(e) => setOrganizationName(e.target.value)}
+                placeholder="例：株式会社〇〇"
+                style={{ padding: "10px 12px", borderRadius: 8, border: "1px solid #e5e7eb", fontSize: 14, outline: "none" }}
+              />
+            </label>
+          ) : (
+            <label style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+              <span style={{ fontSize: 12, fontWeight: 500, color: "#6b7280" }}>会社を選択</span>
+              <select
+                value={selectedOrgId}
+                onChange={(e) => setSelectedOrgId(e.target.value)}
+                style={{ padding: "10px 12px", borderRadius: 8, border: "1px solid #e5e7eb", fontSize: 14, outline: "none" }}
+              >
+                <option value="">選択してください</option>
+                {organizations.map((org) => (
+                  <option key={org.id} value={org.id}>{org.name}</option>
+                ))}
+              </select>
+            </label>
+          )}
 
           <button
             onClick={handleSubmit}
-            disabled={loading || !name || !organizationName}
+            disabled={isDisabled}
             style={{
               marginTop: 8,
               padding: "12px 0",
-              backgroundColor: loading || !name || !organizationName ? "#e5e7eb" : "#6366f1",
-              color: loading || !name || !organizationName ? "#9ca3af" : "#fff",
+              backgroundColor: isDisabled ? "#e5e7eb" : "#6366f1",
+              color: isDisabled ? "#9ca3af" : "#fff",
               border: "none",
               borderRadius: 8,
               fontSize: 14,
               fontWeight: 600,
-              cursor: loading || !name || !organizationName ? "not-allowed" : "pointer",
+              cursor: isDisabled ? "not-allowed" : "pointer",
             }}
           >
             {loading ? "設定中..." : "はじめる"}

@@ -145,7 +145,7 @@ export default function ProjectDetailPage() {
             )}
             {isDirectorOrPM && project.budget && (
               <div style={{ backgroundColor: "#f8fafc", borderRadius: 8, padding: "12px 14px" }}>
-                <p style={{ fontSize: 11, color: "#9ca3af", margin: "0 0 4px" }}>金額</p>
+                <p style={{ fontSize: 11, color: "#9ca3af", margin: "0 0 4px" }}>金額（税別）</p>
                 <p style={{ fontSize: 14, fontWeight: 500, color: "#111827", margin: 0 }}>¥{Number(project.budget).toLocaleString()}</p>
               </div>
             )}

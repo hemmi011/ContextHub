@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { supabase } from "@/lib/supabase"
 import { useRouter } from "next/navigation"
 
@@ -21,6 +21,27 @@ export default function LoginPage() {
       router.push("/")
     }
   }
+
+  useEffect(() => {
+  const checkSession = async () => {
+    const { data } = await supabase.auth.getSession()
+    if (data.session) {
+      // usersテーブルに登録済みか確認
+      const { data: existingUser } = await supabase
+        .from("users")
+        .select("id")
+        .eq("id", data.session.user.id)
+        .single()
+
+      if (existingUser) {
+        router.push("/")
+      } else {
+        router.push("/profile/setup")
+      }
+    }
+  }
+  checkSession()
+}, [])
 
   return (
     <div style={{

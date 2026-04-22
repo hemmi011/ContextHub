@@ -36,7 +36,7 @@ export default function Home() {
     }, [])
 
     return (
-        <div>
+        <div style={{padding: 30, borderRadius: 20, border: "1px solid", backgroundColor: "#b7d2ffff"}}>
             <p>案件数:{projectStats.active + projectStats.done}</p>
             <p>進行中：{projectStats.active}</p>
             <p>完了:{projectStats.done}</p>

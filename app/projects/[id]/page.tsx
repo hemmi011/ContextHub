@@ -153,7 +153,6 @@ export default function ProjectDetailPage() {
           </div>
 
           {/* 要件メモ */}
-          {/* 要件メモ */}
             {project.requirements && (
               <div style={{ backgroundColor: "#ffffff", border: "1px solid #e5e7eb", borderRadius: 12, padding: "16px 18px", marginBottom: 24 }}>
                 <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 8 }}>
@@ -171,7 +170,7 @@ export default function ProjectDetailPage() {
                   fontSize: 14,
                   color: "#374151",
                   lineHeight: 1.7,
-                  overflow: "hidden",
+                  overflow: requirementsExpanded ? "visible" : "auto",
                   maxHeight: requirementsExpanded ? "none" : "80px",
                 }}>
                   {project.requirements.split("\n").map((line, i) => (

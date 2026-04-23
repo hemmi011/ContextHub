@@ -4,10 +4,6 @@ import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
 import { supabase } from "@/lib/supabase"
 
-type Organization = {
-  id: string
-  name: string
-}
 
 export default function ProfileSetupPage() {
   const router = useRouter()
@@ -33,13 +29,7 @@ export default function ProfileSetupPage() {
     getUser()
   }, [])
 
-  useEffect(() => {
-    const fetchOrganizations = async () => {
-      const { data } = await supabase.from("organizations").select("id, name")
-      setOrganizations(data || [])
-    }
-    fetchOrganizations()
-  }, [])
+
 
     const handleSubmit = async () => {
     if (!name || !organizationName) return

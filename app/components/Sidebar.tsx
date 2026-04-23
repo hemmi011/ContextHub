@@ -1,7 +1,8 @@
 "use client"
 
 import Link from "next/link"
-import { usePathname } from "next/navigation"
+import { usePathname, useRouter } from "next/navigation"
+import { supabase } from "@/lib/supabase"
 
 const menuItems = [
   {
@@ -43,6 +44,7 @@ const menuItems = [
 
 export default function Sidebar() {
   const pathname = usePathname()
+  const router = useRouter()
 
   return (
     <div style={{
@@ -54,6 +56,7 @@ export default function Sidebar() {
       flexDirection: "column",
       alignItems: "center",
       paddingTop: 16,
+      paddingBottom: 16,
       gap: 4,
       position: "fixed",
       top: 0,
@@ -74,25 +77,57 @@ export default function Sidebar() {
             key={item.href}
             href={item.href}
             style={{
-                width: 60,
-                display: "flex",
-                flexDirection: "column",
-                alignItems: "center",
-                justifyContent: "center",
-                gap: 4,
-                padding: "8px 0",
-                borderRadius: 10,
-                color: isActive ? "#6366f1" : "#9ca3af",
-                backgroundColor: isActive ? "#eef2ff" : "transparent",
-                textDecoration: "none",
-                transition: "all 0.15s",
+              width: 60,
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              justifyContent: "center",
+              gap: 4,
+              padding: "8px 0",
+              borderRadius: 10,
+              color: isActive ? "#6366f1" : "#9ca3af",
+              backgroundColor: isActive ? "#eef2ff" : "transparent",
+              textDecoration: "none",
+              transition: "all 0.15s",
             }}
-            >
+          >
             {item.icon}
             <span style={{ fontSize: 9, fontWeight: 500 }}>{item.label}</span>
-            </Link>
+          </Link>
         )
       })}
+
+      {/* ログアウトボタン */}
+      <button
+        onClick={async () => {
+          await supabase.auth.signOut()
+          router.push("/login")
+        }}
+        title="ログアウト"
+        style={{
+          marginTop: "auto",
+          width: 60,
+          height: 44,
+          borderRadius: 10,
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          justifyContent: "center",
+          gap: 4,
+          color: "#9ca3af",
+          backgroundColor: "transparent",
+          border: "none",
+          cursor: "pointer",
+        }}
+      >
+        <svg width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+          <path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4" />
+          <polyline points="16 17 21 12 16 7" />
+          <line x1="21" y1="12" x2="9" y2="12" />
+        </svg>
+        <span style={{ fontSize: 9, fontWeight: 500 }}>ログアウト</span>
+      </button>
+
     </div>
   )
 }

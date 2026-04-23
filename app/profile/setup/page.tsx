@@ -14,13 +14,10 @@ export default function ProfileSetupPage() {
   const [name, setName] = useState("")
   const [role, setRole] = useState("director")
   const [organizationName, setOrganizationName] = useState("")
-  const [selectedOrgId, setSelectedOrgId] = useState("")
-  const [organizations, setOrganizations] = useState<Organization[]>([])
   const [loading, setLoading] = useState(false)
   const [userId, setUserId] = useState("")
   const [email, setEmail] = useState("")
-
-  const isManager = role === "director" || role === "pm"
+  
 
   useEffect(() => {
     const getUser = async () => {
@@ -44,42 +41,33 @@ export default function ProfileSetupPage() {
     fetchOrganizations()
   }, [])
 
-  const handleSubmit = async () => {
-    if (!name) return
-    if (isManager && !organizationName) return
-    if (!isManager && !selectedOrgId) return
-
+    const handleSubmit = async () => {
+    if (!name || !organizationName) return
     setLoading(true)
 
-    let orgId = selectedOrgId
-
-    if (isManager) {
-      const { data: org } = await supabase
+    const { data: org } = await supabase
         .from("organizations")
         .insert([{ name: organizationName }])
         .select()
         .single()
 
-      if (!org) {
+    if (!org) {
         setLoading(false)
         return
-      }
-      orgId = org.id
     }
 
     await supabase.from("users").upsert([{
-      id: userId,
-      name: name,
-      email: email,
-      role: role,
-      organization_id: orgId,
+        id: userId,
+        name: name,
+        email: email,
+        role: role,
+        organization_id: org.id,
     }])
 
     router.push("/")
-  }
+    }
 
-  const isDisabled = loading || !name ||
-    (isManager ? !organizationName : !selectedOrgId)
+    const isDisabled = loading || !name || !organizationName
 
   return (
     <div style={{
@@ -134,31 +122,19 @@ export default function ProfileSetupPage() {
             </select>
           </label>
 
-          {isManager ? (
+          {/* ✅ 全員同じフォームを表示 */}
             <label style={{ display: "flex", flexDirection: "column", gap: 6 }}>
-              <span style={{ fontSize: 12, fontWeight: 500, color: "#6b7280" }}>会社名（新規作成）</span>
-              <input
+            <span style={{ fontSize: 12, fontWeight: 500, color: "#6b7280" }}>会社名</span>
+            <input
                 value={organizationName}
                 onChange={(e) => setOrganizationName(e.target.value)}
                 placeholder="例：株式会社〇〇"
                 style={{ padding: "10px 12px", borderRadius: 8, border: "1px solid #e5e7eb", fontSize: 14, outline: "none" }}
-              />
+            />
+            <span style={{ fontSize: 11, color: "#9ca3af" }}>
+                既存の会社に参加する場合は管理者から招待してもらってください
+            </span>
             </label>
-          ) : (
-            <label style={{ display: "flex", flexDirection: "column", gap: 6 }}>
-              <span style={{ fontSize: 12, fontWeight: 500, color: "#6b7280" }}>会社を選択</span>
-              <select
-                value={selectedOrgId}
-                onChange={(e) => setSelectedOrgId(e.target.value)}
-                style={{ padding: "10px 12px", borderRadius: 8, border: "1px solid #e5e7eb", fontSize: 14, outline: "none" }}
-              >
-                <option value="">選択してください</option>
-                {organizations.map((org) => (
-                  <option key={org.id} value={org.id}>{org.name}</option>
-                ))}
-              </select>
-            </label>
-          )}
 
           <button
             onClick={handleSubmit}

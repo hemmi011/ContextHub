@@ -38,6 +38,7 @@ export default function ProjectDetailPage() {
   const [loading, setLoading] = useState(true)
   const [activeTab, setActiveTab] = useState<"director" | "designer" | "coder">("director")
   const [editing, setEditing] = useState(false)
+  const [requirementsExpanded, setRequirementsExpanded] = useState(false)
   const [editForm, setEditForm] = useState({ 
     name: "", 
     client_name: "", 
@@ -152,12 +153,43 @@ export default function ProjectDetailPage() {
           </div>
 
           {/* 要件メモ */}
-          {project.requirements && (
-            <div style={{ backgroundColor: "#ffffff", border: "1px solid #e5e7eb", borderRadius: 12, padding: "16px 18px", marginBottom: 24 }}>
-              <p style={{ fontSize: 11, color: "#9ca3af", margin: "0 0 8px" }}>要件メモ</p>
-              <p style={{ fontSize: 14, color: "#374151", lineHeight: 1.7, margin: 0 }}>{project.requirements}</p>
-            </div>
-          )}
+          {/* 要件メモ */}
+            {project.requirements && (
+              <div style={{ backgroundColor: "#ffffff", border: "1px solid #e5e7eb", borderRadius: 12, padding: "16px 18px", marginBottom: 24 }}>
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 8 }}>
+                  <p style={{ fontSize: 11, color: "#9ca3af", margin: 0 }}>要件メモ</p>
+                  {project.requirements.length > 200 && (
+                    <button
+                      onClick={() => setRequirementsExpanded(!requirementsExpanded)}
+                      style={{ fontSize: 11, color: "#6366f1", background: "none", border: "none", cursor: "pointer", padding: 0 }}
+                    >
+                      {requirementsExpanded ? "閉じる" : "もっと見る"}
+                    </button>
+                  )}
+                </div>
+                <div style={{
+                  fontSize: 14,
+                  color: "#374151",
+                  lineHeight: 1.7,
+                  overflow: "hidden",
+                  maxHeight: requirementsExpanded ? "none" : "80px",
+                }}>
+                  {project.requirements.split("\n").map((line, i) => (
+                    <span key={i}>
+                      {line.split(/(https?:\/\/[^\s]+)/).map((part, j) =>
+                        part.match(/^https?:\/\//) ? (
+                          <a key={j} href={part} target="_blank" rel="noopener noreferrer"
+                            style={{ color: "#6366f1", textDecoration: "underline" }}>
+                            {part}
+                          </a>
+                        ) : part
+                      )}
+                      {i < project.requirements!.split("\n").length - 1 && <br />}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            )}
 
           {/* タブ */}
           <div style={{ borderBottom: "1px solid #e5e7eb", display: "flex", marginBottom: 24 }}>

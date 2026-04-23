@@ -4,7 +4,7 @@ import { supabase } from "@/lib/supabase"
 import { useRouter } from "next/router"
 import { useEffect, useState } from "react"
 
-type Project = {
+type Projects = {
     id: string
     name: string
     client_name: string
@@ -15,13 +15,13 @@ type Project = {
 
 export default function Home() {
 
-    const router = useRouter
+    const router = useRouter()
     const [projectStats, setProjectStats] = useState({active: 0, done: 0})
 
     useEffect (() => {
         const init = async () => {
             const {data: projects} = await supabase
-                .from("project")
+                .from("projects")
                 .select("id,name, client_name, status, end_date")
                 .order("created_at", {ascending:false})
 
@@ -44,7 +44,5 @@ export default function Home() {
             <p>完了：{projectStats.done}</p>
         </div>
     )
-
-
 
 }

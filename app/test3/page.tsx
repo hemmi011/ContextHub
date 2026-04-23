@@ -1,10 +1,12 @@
 "use client"
 
-import { supabase } from "@/lib/supabase"
-import { useRouter } from "next/router"
 import { useEffect, useState } from "react"
+import { useRouter } from "next/router"
+import { supabase } from "@/lib/supabase"
 
-type Projects = {
+
+
+type Project = {
     id: string
     name: string
     client_name: string

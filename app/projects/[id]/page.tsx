@@ -171,7 +171,7 @@ export default function ProjectDetailPage() {
                   color: "#374151",
                   lineHeight: 1.7,
                   overflow: requirementsExpanded ? "visible" : "auto",
-                  maxHeight: requirementsExpanded ? "none" : "80px",
+                  maxHeight: requirementsExpanded ? "none" : "120px",
                 }}>
                   {project.requirements.split("\n").map((line, i) => (
                     <span key={i}>

@@ -3,8 +3,7 @@
 import { useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
 import { supabase } from "@/lib/supabase"
-import Link from "next/link"
-import { format } from "path"
+
 
     type Project = {
         id: string
@@ -23,7 +22,7 @@ import { format } from "path"
 export default function Home() {
     const router = useRouter()
     const [projectStats, setProjectStats] = useState({active: 0, done: 0})
-    const [tasksStats, setTasksStats] = useState({active: 0, done: 0})
+    const [tasksStats, setTasksStats] = useState({todo: 0, inProgress: 0})
 
 
     useEffect(() => {
@@ -49,8 +48,8 @@ export default function Home() {
 
             if (tasks) {
                 setTasksStats({
-                    active: tasks.filter((p) => p.status === "未着手").length,
-                    done: tasks.filter((p) => p.status === "完了").length,
+                    todo: tasks.filter((t) => t.status === "未着手").length,    // (t)は今取り出した１つをtとよぶ。tのstatusが未着手か確認
+                    inProgress: tasks.filter((t) => t.status === "完了").length,
                 })
             }
         }
@@ -68,9 +67,9 @@ export default function Home() {
         </div>
 
         <div>
-            <p>タスク数：{tasksStats.active + tasksStats.done}件</p>
-            <p>未着手：{tasksStats.active}</p>
-            <p>完了：{tasksStats.done}</p>
+            <p>タスク数：{tasksStats.todo + tasksStats.inProgress}件</p>
+            <p>未着手：{tasksStats.todo}</p>
+            <p>完了：{tasksStats.inProgress}</p>
         </div>
 
     </div>

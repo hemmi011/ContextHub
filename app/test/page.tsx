@@ -14,9 +14,16 @@ import { format } from "path"
         end_date: string
     }
 
+    type Task = {
+        id: string
+        name: string
+        status: string
+    }
+
 export default function Home() {
     const router = useRouter()
     const [projectStats, setProjectStats] = useState({active: 0, done: 0})
+    const [tasksStats, setTasksStats] = useState({active: 0, done: 0})
 
 
     useEffect(() => {
@@ -33,6 +40,19 @@ export default function Home() {
                     done: projects.filter((p) => p.status === "完了").length,
                 })
             }
+
+
+            const {data: tasks} = await supabase
+                .from("tasks")
+                .select("id, title, status")
+                .order("created_at", {ascending:false})
+
+            if (tasks) {
+                setTasksStats({
+                    active: tasks.filter((p) => p.status === "未着手").length,
+                    done: tasks.filter((p) => p.status === "完了").length,
+                })
+            }
         }
 
         init()
@@ -46,6 +66,14 @@ export default function Home() {
             <p>進行中：{projectStats.active}</p>
             <p>完了：{projectStats.done}</p>
         </div>
+
+        <div>
+            <p>タスク数：{tasksStats.active + tasksStats.done}件</p>
+            <p>未着手：{tasksStats.active}</p>
+            <p>完了：{tasksStats.done}</p>
+        </div>
+
     </div>
+
   )
 }

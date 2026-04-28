@@ -20,7 +20,7 @@ export default function Home() {
     useEffect(() => {
         const init = async () => {
             const {data: projects} = await supabase
-                .from("project")
+                .from("projects")
                 .select("id, name, client_name, status, end_date")
                 .order("created_at", {ascending:false})
 

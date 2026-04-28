@@ -15,6 +15,7 @@ type Project = {
 export default function Home() {
     const router = useRouter()
     const [projectStats, setProjectStats] = useState({active:0, done:0})
+    const [tasksStats, setTasksStats] = useState({todo: 0, inProgress: 0})
 
     useEffect(() => {
         const init = async () => {
@@ -30,6 +31,18 @@ export default function Home() {
                     })
                 }
 
+                const {data: tasks} = await supabase
+                .from("tasks")
+                .select("id, title, status")
+                .order("created_at", {ascending:false})
+
+            if (tasks) {
+                setTasksStats({
+                    todo: tasks.filter((t) => t.status === "未着手").length,    // (t)は今取り出した１つをtとよぶ。tのstatusが未着手か確認
+                    inProgress: tasks.filter((t) => t.status === "完了").length,
+                })
+            }
+
         }   
 
         init()
@@ -40,6 +53,13 @@ export default function Home() {
             <p>案件数:{projectStats.active + projectStats.done}</p>
             <p>進行中：{projectStats.active}</p>
             <p>完了:{projectStats.done}</p>
+
+            <div>
+            <p>タスク数：{tasksStats.todo + tasksStats.inProgress}件</p>
+            <p>未着手：{tasksStats.todo}</p>
+            <p>完了：{tasksStats.inProgress}</p>
+        </div>
+
         </div>
     )
 

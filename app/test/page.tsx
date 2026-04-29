@@ -75,7 +75,7 @@ export default function Home() {
   return (
     <div style={{padding: 40}}>
 
-        <div>
+        <div style={{marginBottom: 20}}>
             {userName}さん、こんにちは
         </div>
 

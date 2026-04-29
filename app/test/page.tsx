@@ -23,10 +23,18 @@ export default function Home() {
     const router = useRouter()
     const [projectStats, setProjectStats] = useState({active: 0, done: 0})
     const [tasksStats, setTasksStats] = useState({todo: 0, inProgress: 0})
+    const [userName, setUserName] = useState("")
 
 
     useEffect(() => {
         const init = async () => {
+
+            const {data: userData} = await supabase.auth.getUser()
+                if(!userData.user) {
+                    router.push("login")
+                    return
+                }
+
 
             const {data: projects} = await supabase
                 .from("projects")
@@ -52,7 +60,13 @@ export default function Home() {
                     inProgress: tasks.filter((t) => t.status === "完了").length,
                 })
             }
-        }
+
+            const {data: UserProfile} = await supabase
+                .from("users")
+                .select("name")
+                .eq("id",userData.user.id).single()
+                if (UserProfile) setUserName(UserProfile.name)
+            }
 
         init()
     }, [])
@@ -60,6 +74,11 @@ export default function Home() {
 
   return (
     <div style={{padding: 40}}>
+
+        <div>
+            {userName}さん、こんにちは
+        </div>
+
         <div style={{backgroundColor: "#ffe8e8ff", border: "1px solid #6984ffff", borderRadius: 20 , width: "20%", padding: 10}}>
             <p>案件数：{projectStats.active + projectStats.done}件</p>
             <p>進行中：{projectStats.active}</p>

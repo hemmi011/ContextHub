@@ -1,6 +1,6 @@
 "use client"
 
-import { use, useEffect, useState } from "react"
+import { useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
 import { supabase } from "@/lib/supabase"
 import Link from "next/link"
@@ -107,6 +107,7 @@ export default function Home() {
             ) : (
                 <div>
                     {recentProjects.map((project) => (
+                        <Link key={project.id} href={`/projects/${project.id}`}>
                         <div>
                             <span>{project.name}</span>
                             <span>{project.client_name}</span>
@@ -117,6 +118,7 @@ export default function Home() {
                                 )}
                             </span>
                         </div>
+                        </Link>
                     ))}
                 </div>
             )}

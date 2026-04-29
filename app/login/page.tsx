@@ -3,6 +3,8 @@
 import { useEffect, useState } from "react"
 import { supabase } from "@/lib/supabase"
 import { useRouter } from "next/navigation"
+import Link from "next/link"
+
 
 export default function LoginPage() {
   const router = useRouter()
@@ -123,7 +125,14 @@ export default function LoginPage() {
             }}
           >
             {loading ? "ログイン中..." : "ログイン"}
+            
           </button>
+
+            <Link href="/signup" style={{ fontSize: 13, color: "#6b7280", textAlign: "center" }}>
+            アカウントをお持ちでない方はこちら
+          </Link>
+
+          
 
           <button
             onClick={async () => {
@@ -159,6 +168,8 @@ export default function LoginPage() {
             </svg>
             Googleでログイン
           </button>
+
+          
         </div>
       </div>
     </div>

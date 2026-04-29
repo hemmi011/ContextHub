@@ -1,8 +1,10 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { use, useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
 import { supabase } from "@/lib/supabase"
+import Link from "next/link"
+
 
 
     type Project = {
@@ -24,6 +26,7 @@ export default function Home() {
     const [projectStats, setProjectStats] = useState({active: 0, done: 0})
     const [tasksStats, setTasksStats] = useState({todo: 0, inProgress: 0})
     const [userName, setUserName] = useState("")
+    const [recentProjects, setRecentProjects] = useState<Project[]>([])
 
 
     useEffect(() => {
@@ -46,6 +49,7 @@ export default function Home() {
                     active: projects.filter((p) => p.status === "進行中").length,
                     done: projects.filter((p) => p.status === "完了").length,
                 })
+                setRecentProjects(projects.slice(0,5))
             }
 
 
@@ -90,6 +94,31 @@ export default function Home() {
             <p>未着手：{tasksStats.todo}</p>
             <p>完了：{tasksStats.inProgress}</p>
         </div>
+
+    {/* {直近の案件} */}
+        <div>
+            <div>
+                <p>直近の案件</p>
+                <Link href="/projects">すべて見る </Link>
+            </div>
+
+            {recentProjects.length === 0 ? (
+                <p>案件がありません</p>
+            ) : (
+                <div>
+                    {recentProjects.map((project) => (
+                        <div>
+                            <span>{project.name}</span>
+                            <span>{project.client_name}</span>
+                            <span>{project.status}</span>
+                            <span>{project.end_date}</span>
+                        </div>
+                    ))}
+                </div>
+            )}
+        </div>
+
+
 
     </div>
 

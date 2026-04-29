@@ -111,7 +111,11 @@ export default function Home() {
                             <span>{project.name}</span>
                             <span>{project.client_name}</span>
                             <span>{project.status}</span>
-                            <span>{project.end_date}</span>
+                            <span>
+                                {project.end_date && (
+                                    <span>{new Date(project.end_date).toLocaleDateString("ja-JP")}</span>
+                                )}
+                            </span>
                         </div>
                     ))}
                 </div>

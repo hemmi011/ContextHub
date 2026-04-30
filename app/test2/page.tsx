@@ -52,8 +52,8 @@ export default function Home () {
 
                 if(tasks) {
                     setTaskStatus({
-                        todo: tasks.filter((t) => t.status === "進行中").length,
-                        inProgress: tasks.filter((t) => t.status === "未着手").length,
+                        todo: tasks.filter((t) => t.status === "未着手").length,
+                        inProgress: tasks.filter((t) => t.status === "進行中").length,
                     })
                 }
 
@@ -83,8 +83,8 @@ export default function Home () {
 
                 <div>
                     <p>タスク数：{taskStats.todo + taskStats.inProgress}</p>
-                    <p>未着手：{taskStats.inProgress}</p>
-                    <p>進行中：{taskStats.todo}</p>
+                    <p>未着手：{taskStats.todo}</p>
+                    <p>進行中：{taskStats.inProgress}</p>
                 </div>
 
 

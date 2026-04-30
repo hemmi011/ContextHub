@@ -8,9 +8,9 @@ import Link from "next/link"
 type Project = {
     id: string
     name: string
-    client_name: string
     status: string
     end_date: string
+    client_name: string
 }
 
 export default function Home () {

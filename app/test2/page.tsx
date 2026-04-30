@@ -19,6 +19,7 @@ export default function Home () {
     const [userName, setUserName] = useState("")
     const [projectStats, setProjectStats] = useState({active: 0, done: 0})
     const [taskStats, setTaskStatus] = useState({todo: 0, inProgress: 0})
+    const [recentProjects, setRecentProjects] = useState<Project[]>([])
 
     useEffect(() => {
 
@@ -39,6 +40,8 @@ export default function Home () {
                         active: projects.filter((p) => p.status === "進行中").length ,
                         done: projects.filter((p) => p.status === "完了").length ,
                     })
+
+                    setRecentProjects(projects.slice(0,5))
                 }
 
             const {data: tasks} = await supabase
@@ -83,6 +86,44 @@ export default function Home () {
                     <p>未着手：{taskStats.inProgress}</p>
                     <p>進行中：{taskStats.todo}</p>
                 </div>
+
+
+                {/* {直近の案件表示} */}
+                    <div>
+                        <div>
+                            <p>直近の案件</p>
+                            <Link href={"/projects"}>すべて見る</Link>
+                        </div>
+
+                        <div>
+                            {recentProjects.length === 0 ? (
+                                <p>案件がありません</p>
+                            ) : (
+                                <div>
+                                    {recentProjects.map((projects) => (
+                                        <Link key={projects.id} href={`/projects/${projects.id}`}>
+                                            <div>
+                                                <span>{projects.name}</span>
+                                                <span>{projects.client_nama}</span>
+                                                <span>{projects.status}</span>
+                                                <span>
+                                                    {projects.end_date && (
+                                                        <span>{new Date(projects.end_date).toLocaleDateString("ja-JP")}</span>
+                                                    )}
+                                                </span>
+                                            </div>
+                                        </Link>
+                                    ))}
+                                </div>
+                            )}
+                        </div>
+
+
+                    </div>
+
+
+
+
 
             </div>
         

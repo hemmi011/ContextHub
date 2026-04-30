@@ -104,7 +104,7 @@ export default function Home () {
                                         <Link key={projects.id} href={`/projects/${projects.id}`}>
                                             <div>
                                                 <span>{projects.name}</span>
-                                                <span>{projects.client_nama}</span>
+                                                <span>{projects.client_name}</span>
                                                 <span>{projects.status}</span>
                                                 <span>
                                                     {projects.end_date && (

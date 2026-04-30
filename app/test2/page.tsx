@@ -8,7 +8,7 @@ import Link from "next/link"
 type Project = {
     id: string
     name: string
-    client_nama: string
+    client_name: string
     status: string
     end_date: string
 }
@@ -32,7 +32,7 @@ export default function Home () {
 
             const {data: projects} = await supabase
                 .from("projects")
-                .select("name, client_name, status, end_date")
+                .select("id ,name, client_name, status, end_date")
                 .order("created_at", {ascending: false})
 
                 if(projects) {

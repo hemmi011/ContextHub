@@ -52,6 +52,7 @@ export default function SignupPage() {
     .single()
 
   if (orgError || !org) {
+    console.error("organizations insert error:", orgError)
     setError("会社の登録に失敗しました。")
     setLoading(false)
     return

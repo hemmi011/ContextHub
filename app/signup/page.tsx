@@ -16,65 +16,62 @@ export default function SignupPage() {
   const [error, setError] = useState("")
 
   const handleSignup = async () => {
-  if (!name || !email || !password || !organizationName) return
-  setLoading(true)
-  setError("")
+    if (!name || !email || !password || !organizationName) return
+    setLoading(true)
+    setError("")
 
-  // 1. サインアップ
-  const { data: authData, error: authError } = await supabase.auth.signUp({
-    email,
-    password,
-  })
+    // 1. サインアップ（Confirm email OFF の場合、ここでセッションも発行される）
+    const { data: authData, error: authError } = await supabase.auth.signUp({
+      email,
+      password,
+    })
 
-  if (authError || !authData.user) {
-    setError("登録に失敗しました。もう一度お試しください。")
-    setLoading(false)
-    return
+    if (authError || !authData.user) {
+      console.error("signup error:", authError)
+      setError(authError?.message ?? "登録に失敗しました。もう一度お試しください。")
+      setLoading(false)
+      return
+    }
+
+    // 2. セッションが確立されたか確認（RLS が authenticated を要求するため必須）
+    if (!authData.session) {
+      setError("セッションの確立に失敗しました。メール確認設定を確認してください。")
+      setLoading(false)
+      return
+    }
+
+    // 3. 組織を作成
+    const { data: org, error: orgError } = await supabase
+      .from("organizations")
+      .insert([{ name: organizationName }])
+      .select()
+      .single()
+
+    if (orgError || !org) {
+      console.error("organizations insert error:", orgError)
+      setError("会社の登録に失敗しました。")
+      setLoading(false)
+      return
+    }
+
+    // 4. users テーブルに登録
+    const { error: userError } = await supabase.from("users").insert([{
+      id: authData.user.id,
+      name,
+      email,
+      role,
+      organization_id: org.id,
+    }])
+
+    if (userError) {
+      console.error("users insert error:", userError)
+      setError("ユーザー情報の登録に失敗しました。")
+      setLoading(false)
+      return
+    }
+
+    router.push("/")
   }
-
-  // 2. すぐにログインしてセッションを取得
-  const { error: signInError } = await supabase.auth.signInWithPassword({
-    email,
-    password,
-  })
-
-  if (signInError) {
-    setError("ログインに失敗しました。")
-    setLoading(false)
-    return
-  }
-
-  // 3. 組織を作成
-  const { data: org, error: orgError } = await supabase
-    .from("organizations")
-    .insert([{ name: organizationName }])
-    .select()
-    .single()
-
-  if (orgError || !org) {
-    console.error("organizations insert error:", orgError)
-    setError("会社の登録に失敗しました。")
-    setLoading(false)
-    return
-  }
-
-  // 4. usersテーブルに登録
-  const { error: userError } = await supabase.from("users").insert([{
-    id: authData.user.id,
-    name,
-    email,
-    role,
-    organization_id: org.id,
-  }])
-
-  if (userError) {
-    setError("ユーザー情報の登録に失敗しました。")
-    setLoading(false)
-    return
-  }
-
-  router.push("/")
-}
 
   const isDisabled = loading || !name || !email || !password || !organizationName
 
